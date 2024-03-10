@@ -5,6 +5,10 @@ let desc = document.querySelector("#text");
 let submit = document.querySelector(".submit");
 let cancel = document.querySelector(".cancel");
 
+let timer = document.querySelector(".timer");
+let seconds = +localStorage.getItem("seconds");
+let minutes, hours, days, weeks, months, years;
+
 let arr = [];
 
 if (localStorage.getItem("notes")) {
@@ -12,6 +16,7 @@ if (localStorage.getItem("notes")) {
 }
 
 if (notes !== null && arr.length !== 0) {
+  timer.innerHTML = localStorage.getItem("time");
   addToPage(arr);
 
   notes.addEventListener("click", (e) => {
@@ -23,21 +28,19 @@ if (notes !== null && arr.length !== 0) {
         notes.innerHTML = '<h4 class="none">No Data To Show</h4>';
       }
     }
+    localStorage.setItem("time", `last edit a few moments ago`);
+    timer.innerHTML = localStorage.getItem("time");
+    localStorage.setItem("seconds", 0);
+    seconds = 0;
   });
-
-  // divArr.forEach(function (div) {
-  //   div.addEventListener("click", (edited) => {
-  //     editNote(edited);
-  //   });
-  // });
 }
 
 if (submit !== null && cancel !== null) {
   submit.onclick = function () {
     if (title.value !== "" && desc.value !== "") {
+      localStorage.setItem("time", `last edit a few moments ago`);
+      localStorage.setItem("seconds", 0);
       addToArray(title, desc);
-      title.value = "";
-      desc.value = "";
     } else {
       window.alert("Please Fill The Inputs First!");
     }
@@ -90,6 +93,8 @@ function addToPage(arr) {
 
     notes.appendChild(div);
   });
+  timer.innerHTML = localStorage.getItem("time");
+  setInterval(timerDuration, 1000);
 }
 
 function delNote(id) {
@@ -97,39 +102,90 @@ function delNote(id) {
   addToStorage(arr);
 }
 
-let divArr = document.querySelectorAll(".note");
-let editTitle, editDesc;
+function timerDuration() {
+  seconds += 1;
+  localStorage.setItem("seconds", seconds);
 
-divArr.forEach(function (div) {
-  div.addEventListener("click", (e) => {
-    let id;
-    if (e.target.className == "h1" || e.target.className == "p") {
-      id = e.target.parentElement.parentElement.id;
-      location.href = "../form/form.html";
+  minutes = Math.floor(seconds / 60);
+  hours = Math.floor(minutes / 60);
+  days = Math.floor(hours / 24);
+  weeks = Math.floor(days / 7);
+  months = Math.floor(days / 30);
+  years = Math.floor(months / 12);
 
-      // console.log(id);
-    } else if (e.target.className == "title") {
-      id = e.target.parentElement.id;
-      location.href = "../form/form.html";
-
-      // console.log(id);
-    } else if (e.target.className == "note") {
-      location.href = "../form/form.html";
-
-      id = e.target.id;
-      // console.log(id);
-    }
-
-    arr.forEach((e) => {
-      if (e.id == id) {
-        editTitle = e.content;
-        editDesc = e.description;
+  if (years < 1) {
+    if (months < 1) {
+      if (weeks < 1) {
+        if (days < 1) {
+          if (hours < 1) {
+            if (minutes < 1) {
+              localStorage.setItem("time", `last edit a few moments ago`);
+            } else if (minutes == 1) {
+              localStorage.setItem("time", `last edit a minute ago`);
+            } else {
+              localStorage.setItem("time", `last edit ${minutes} minutes ago`);
+            }
+          } else if (hours == 1) {
+            localStorage.setItem("time", `last edit an hour ago`);
+          } else {
+            localStorage.setItem("time", `last edit ${hours} hours ago`);
+          }
+        } else if (days == 1) {
+          localStorage.setItem("time", `last edit a day ago`);
+        } else {
+          localStorage.setItem("time", `last edit ${days} days ago`);
+        }
+      } else if (weeks == 1) {
+        localStorage.setItem("time", `last edit a week ago`);
+      } else {
+        localStorage.setItem("time", `last edit ${weeks} weeks ago`);
       }
-    });
-    title.value = editTitle;
-    desc.value = editDesc;
-  });
-});
+    } else if (months == 1) {
+      localStorage.setItem("time", `last edit a month ago`);
+    } else {
+      localStorage.setItem("time", `last edit ${months} months ago`);
+    }
+  } else if (years == 1) {
+    localStorage.setItem("time", `last edit a year ago`);
+  } else {
+    localStorage.setItem("time", `last edit ${years} years ago`);
+  }
+  timer.innerHTML = localStorage.getItem("time");
+}
+
+// let divArr = document.querySelectorAll(".note");
+// let editTitle, editDesc;
+
+// divArr.forEach(function (div) {
+//   div.addEventListener("click", (e) => {
+//     let id;
+//     if (e.target.className == "h1" || e.target.className == "p") {
+//       id = e.target.parentElement.parentElement.id;
+//       location.href = "../form/form.html";
+
+//       // console.log(id);
+//     } else if (e.target.className == "title") {
+//       id = e.target.parentElement.id;
+//       location.href = "../form/form.html";
+
+//       // console.log(id);
+//     } else if (e.target.className == "note") {
+//       location.href = "../form/form.html";
+
+//       id = e.target.id;
+//       // console.log(id);
+//     }
+
+//     arr.forEach((e) => {
+//       if (e.id == id) {
+//         editTitle = e.content;
+//         editDesc = e.description;
+//       }
+//     });
+//     title.value = editTitle;
+//     desc.value = editDesc;
+//   });
+// });
 
 // function editNote(edited) {
 // let arr = [...this.firstChild.children];
